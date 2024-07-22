@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+sed -i "s/#user www-data;/user nginx;/" /etc/nginx/nginx.conf
+sed -i "s/listen 80;/listen 8080;/" /etc/nginx/sites-available/default
+sed -i "s/listen \[::\]:80;/listen [::]:8080;/" /etc/nginx/sites-available/default
+if ! id -u nginx > /dev/null 2>&1; then useradd -r -s /sbin/nologin nginx; fi
+service nginx stop
+service apache2 stop
+service nginx start
+

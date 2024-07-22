@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Fixes server so that Nginx is running as the nginx user.
+
+# Update Nginx configuration to run as 'nginx' user
+sed -i "s/^#user www-data;/user nginx;/" /etc/nginx/nginx.conf
+
+# Update Nginx default site configuration to listen on port 8080
+sed -i "s/listen 80 default_server;/listen 8080 default_server;/" /etc/nginx/sites-available/default
+sed -i "s/listen \[::\]:80 default_server;/listen \[::\]:8080 default_server;/" /etc/nginx/sites-available/default
+
+# Ensure the nginx user exists
+if ! id -u nginx > /dev/null 2>&1; then
+    useradd -r -s /sbin/nologin nginx
+fi
+
+# Stop Apache if it's running
+if systemctl is-active --quiet apache2; then
+    systemctl stop apache2
+fi
+
+# Restart Nginx to apply changes
+service nginx restart
+
+# Verify Nginx is running as the nginx user
+ps aux | grep -E 'nginx: master process' | grep -v grep
+
+# Verify Nginx is listening on port 8080
+nc -zv 127.0.0.1 8080 && echo "Nginx is listening on port 8080"
+
