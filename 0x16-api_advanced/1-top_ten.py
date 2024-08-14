@@ -23,7 +23,7 @@ def top_ten(subreddit):
     limit = 10
     url = '{}/r/{}/.json?sort={}&limit={}'.format(
         base_url, subreddit, sort, limit)
-    headers = {'user-agent': 'custom'}
+    headers = {'User-Agent": "My-User-Agent'}
     response = requests.get(
         url,
         headers=headers,
